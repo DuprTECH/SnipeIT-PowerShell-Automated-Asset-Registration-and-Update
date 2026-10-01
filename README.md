@@ -3,6 +3,8 @@
 PowerShell script that keeps your **[Snipe-IT](https://snipeitapp.com/)** asset inventory up to date automatically. It runs on every Windows computer, collects hardware and software details and **creates or updates the asset in Snipe-IT through the REST API**. The asset is also **checked out to the user who is logged on**.
 
 > 🪟 **Windows only.** The script uses WMI/CIM, the registry, `dsregcmd` and Windows Defender cmdlets. It does not run on macOS or Linux.
+>
+> 🍎🐧 **Need it for macOS or Linux?** The same automated registration and update can be built for other operating systems too (for example deployed through Intune for macOS, Jamf or a cron job). Get in touch: 📧 [info@duprtech.sk](mailto:info@duprtech.sk)
 
 Deploy it with:
 - **Microsoft Intune → Remediations** (detection script only, no remediation script needed), or
