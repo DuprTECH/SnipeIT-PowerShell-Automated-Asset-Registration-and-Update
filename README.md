@@ -121,10 +121,11 @@ Edit the `CONFIGURATION` section at the top of `SnipeIT-AssetSync.ps1`:
 | `$SnipeItApiUrl` | Snipe-IT API URL, for example `https://snipeit.example.com/api/v1` |
 | `$SnipeItApiToken` | API token |
 | `$status_id` | Status label ID for new assets |
-| `$fieldset_id` | Fieldset ID for new models (`0` = none) |
-| `$CategoryIdLaptop` / `$CategoryIdDesktop` | Category IDs for new models |
+| `$fieldset_id` | Fieldset ID for new models (`0` = none). **Must exist** and contain your custom fields, otherwise Snipe-IT rejects the custom field values of assets of that model. |
+| `$CategoryIdLaptop` / `$CategoryIdDesktop` | Category IDs for new models. Must be existing categories of type **Asset**, otherwise new models (and so new assets) can't be created. |
 | `$LaptopHostnamePrefix` | Optional: computers whose name starts with this prefix are laptops (for example `N-`). Empty = detect by chassis type. |
 | `$RustDeskExePath` | Optional: RustDesk executable used to read the ID |
+| `$UpdateExistingModel` | `$true` = change the model of an existing asset when it differs from the detected one. Default `$false`: keep it off if you name models by hand (for example *Lenovo Yoga 9*), otherwise assets are moved to new, automatically named models. |
 | `$AlwaysUpdate` | `$true` = update the asset on every run, `$false` = only when a value changed |
 | `$SkipAssignmentForLocalAdmins` | `$true` = don't change the assignment when a local admin logs on |
 | `$FieldMap` | Snipe-IT **DB Field** name for every value. Leave a value empty (`""`) to skip it. |

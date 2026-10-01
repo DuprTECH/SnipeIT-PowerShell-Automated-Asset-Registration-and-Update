@@ -47,6 +47,10 @@ $LaptopHostnamePrefix = ""
 # Optional: path to a custom RustDesk executable (used with --get-id if no config file is found)
 $RustDeskExePath = "C:\Program Files\RustDesk\rustdesk.exe"
 
+# Change the model of an EXISTING asset when it differs from the detected one.
+# Keep $false if you name models by hand in Snipe-IT (for example "Lenovo Yoga 9"), otherwise assets are moved to new models.
+$UpdateExistingModel = $false
+
 # Update the asset on every run ($true), or only when a value changed ($false)
 $AlwaysUpdate = $true
 
@@ -896,8 +900,8 @@ if ($asset) {
         }
     }
 
-    # Fix the model of an existing asset if it differs from the detected one
-    if ($computerModel -and $asset.model.name -ne $computerModel) {
+    # Change the model of an existing asset if it differs from the detected one (only with $UpdateExistingModel)
+    if ($UpdateExistingModel -and $computerModel -and $asset.model.name -ne $computerModel) {
         $correctModelId = Search-ModelInSnipeIt -ModelName $computerModel | Select-Object -Last 1
         if (-not $correctModelId) {
             $correctModelId = Create-ModelInSnipeIt -ModelName $computerModel -CategoryId (Get-CategoryId) | Select-Object -Last 1
