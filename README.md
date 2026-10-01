@@ -49,10 +49,41 @@ Virtual machines (Hyper-V, VMware, Parallels) and computers without a valid seri
 
 ## Setup in Snipe-IT
 
-1. **Create custom fields** for the data you want to store (*Settings → Custom Fields → New field*, format *ANY* is fine). Note the **DB Field** column of each one, for example `_snipeit_ram_6`.
-2. **Add them to a fieldset** (*Settings → Custom Fields → Fieldsets*) and note the fieldset ID. New models get this fieldset.
+1. **Create custom fields** for the data you want to store, see [Custom fields](#custom-fields) below.
+2. **Add them to a fieldset** (*Settings → Custom Fields → Fieldsets → New Fieldset*, then add the fields to it) and note the fieldset ID. New models get this fieldset. Assign the fieldset also to your **existing models**, otherwise their assets can't store the values.
 3. Note the IDs of the **status label** for new assets (*Settings → Status Labels*) and of the **categories** for laptops and desktops (*Settings → Categories*).
 4. **Create a service user and its API token**, see below.
+
+### Custom fields
+
+*Settings → Custom Fields → Create New Custom Field*. Create only the ones you want; each one is optional.
+
+| `$FieldMap` key | Suggested field name | Element | Format | Value sent by the script |
+|-----------------|----------------------|---------|--------|--------------------------|
+| `EthMac` | MAC Address | Text Box | `MAC` | `C0:A5:E8:1E:36:F6` |
+| `WifiMac` | MAC Address Wi-Fi | Text Box | `MAC` | `C0:A5:E8:1E:36:F7` |
+| `EthIPv4` | IPv4 | Text Box | `IPV4` | `10.0.0.15` |
+| `WifiIPv4` | IPv4 Wi-Fi | Text Box | `IPV4` | `10.1.0.20` |
+| `RustDeskId` | RustDesk ID | Text Box | `ANY` | `123456789` |
+| `RAM` | RAM | Text Box | `ANY` | `16 GB` |
+| `CPU` | CPU | Text Box | `ANY` | `13th Gen Intel(R) Core(TM) i7-1360P` |
+| `OS` | Operating System | Text Box | `ANY` | `Microsoft Windows 11 Pro, Build: 26100` |
+| `Storage` | HDD / SSD | Text Box | `ANY` | `[SSD] 953.87 GB` (more disks: `[SSD, HDD] 476.94 GB, 931.51 GB`) |
+| `Antivirus` | Antivirus | Text Box | `ANY` | `Windows Defender 4.18.26080.4 (2026-10-01)` |
+| `Office` | Microsoft Office | Text Box | `ANY` | `Microsoft 365 (16.0.20326.20158)` |
+| `JoinType` | AD / Azure | **Radio Buttons** | `ANY` | one of: `AD`, `Azure`, `AD, Azure` |
+| `OSInstallDate` | OS Install Date | Text Box | `DATE` | `2025-09-09` |
+| `Users` | Users | **Text Area** | `ANY` | `jsmith, adoe` (history of logged-on users) |
+
+- For the **AD / Azure** radio field, enter these three values in *Field Values*, one per line, exactly like this:
+  ```
+  AD
+  Azure
+  AD, Azure
+  ```
+- Leave **Encrypt the value of this field** off (encrypted fields can't be compared or updated by the script).
+- After saving, Snipe-IT shows the **DB Field** of each field in the list (for example `_snipeit_ram_6`). Copy these names to `$FieldMap` in the script.
+- Fields you don't create: set them to `""` in `$FieldMap`.
 
 ### Service user and API token
 
@@ -136,24 +167,33 @@ The script then runs at every user logon.
 
 ```mermaid
 flowchart TD
-    A[Start: logged-on user] --> B{Serial number found?}
-    B -- no --> Z[Exit]
-    B -- yes --> C{Asset with this serial in Snipe-IT?}
-    C -- yes --> D[Append user to users field]
-    D --> E{Local admin?}
-    E -- no --> F[Check out asset to the logged-on user]
-    E -- yes --> G
-    F --> G[Update name + custom fields]
-    C -- no --> H{Model exists?}
-    H -- no --> I[Create model: category laptop / desktop, fieldset]
-    H -- yes --> J
-    I --> J[Create asset with custom fields]
-    J --> K{Local admin?}
-    K -- no --> F2[Check out asset to the logged-on user]
-    K -- yes --> Z
-    G --> Z
-    F2 --> Z
+    A([Script starts as the logged-on user]) --> B{Can the serial number<br/>be read from the BIOS?}
+    B -- "no (e.g. 'To Be Filled By O.E.M.')" --> Z([End])
+    B -- yes --> C[Collect inventory]
+    C --> D{Asset with this serial<br/>exists in Snipe-IT?}
+
+    D -- "yes: UPDATE" --> E[Append user to Users field]
+    E --> F{Logged-on user<br/>is a local admin?}
+    F -- no --> G[Check out the asset<br/>to the logged-on user]
+    F -- yes --> H
+    G --> H[Update asset name<br/>and custom fields]
+    H --> Z
+
+    D -- "no: REGISTER" --> I{Computer model<br/>detected?}
+    I -- "no (virtual machine)" --> Z
+    I -- yes --> J{Model exists<br/>in Snipe-IT?}
+    J -- no --> K[Create model<br/>category laptop / desktop + fieldset]
+    J -- yes --> L
+    K --> L[Create new asset<br/>with custom fields]
+    L --> M{Logged-on user<br/>is a local admin?}
+    M -- no --> N[Check out the asset<br/>to the logged-on user]
+    M -- yes --> Z
+    N --> Z
 ```
+
+- **Serial number in the BIOS**: the only way to recognise the computer. Without it the script can't tell whether the asset already exists, so it stops.
+- **Serial number not in Snipe-IT**: the computer is new, so the asset (and its model, if needed) is **created**.
+- **Serial number already in Snipe-IT**: the existing asset is **updated**.
 
 ## Custom work & support
 
