@@ -896,6 +896,19 @@ if ($asset) {
         }
     }
 
+    # Fix the model of an existing asset if it differs from the detected one
+    if ($computerModel -and $asset.model.name -ne $computerModel) {
+        $correctModelId = Search-ModelInSnipeIt -ModelName $computerModel | Select-Object -Last 1
+        if (-not $correctModelId) {
+            $correctModelId = Create-ModelInSnipeIt -ModelName $computerModel -CategoryId (Get-CategoryId) | Select-Object -Last 1
+        }
+        if ($correctModelId -and $correctModelId -ne $asset.model.id) {
+            Write-Output "Asset model requires update: '$($asset.model.name)' -> '$computerModel' (model ID $correctModelId)"
+            $customFields["model_id"] = [int]$correctModelId
+            $updateRequired = $true
+        }
+    }
+
     # Assign the asset to the logged-on user (not for local admins)
     if ($assignToMe) {
         Ensure-AssetAssignedToMe -AssetId $assetId -AssetDetails $asset
