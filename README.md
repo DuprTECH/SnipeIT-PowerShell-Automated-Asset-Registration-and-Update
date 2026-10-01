@@ -1,4 +1,4 @@
-# Snipe-IT Windows Asset Sync (Intune / GPO)
+# Snipe-IT – PowerShell automated asset registration and update (Intune / GPO)
 
 PowerShell script that keeps your **[Snipe-IT](https://snipeitapp.com/)** asset inventory up to date automatically. It runs on every Windows computer, collects hardware and software details and **creates or updates the asset in Snipe-IT through the REST API**. The asset is also **checked out to the user who is logged on**.
 

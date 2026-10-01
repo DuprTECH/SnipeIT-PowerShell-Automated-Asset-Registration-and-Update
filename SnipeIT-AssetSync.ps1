@@ -17,7 +17,7 @@
 
 .NOTES
     Author : Dusan Priechodsky
-    Source : https://github.com/DuprTECH/SnipeIT-Windows-Asset-Sync
+    Source : https://github.com/DuprTECH/SnipeIT-PowerShell-Automated-Asset-Registration-and-Update
     Contact: info@duprtech.sk
     License: MIT
 #>
