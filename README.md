@@ -71,11 +71,11 @@ Virtual machines (Hyper-V, VMware, Parallels) and computers without a valid seri
 | `Storage` | HDD / SSD | Text Box | `ANY` | `[SSD] 953.87 GB` (more disks: `[SSD, HDD] 476.94 GB, 931.51 GB`) |
 | `Antivirus` | Antivirus | Text Box | `ANY` | `Windows Defender 4.18.26080.4 (2026-10-01)` |
 | `Office` | Microsoft Office | Text Box | `ANY` | `Microsoft 365 (16.0.20326.20158)` |
-| `JoinType` | AD / Azure | **Radio Buttons** | `ANY` | one of: `AD`, `Azure`, `AD, Azure` |
+| `JoinType` | AD / Azure | Text Box or Radio Buttons | `ANY` | one of: `AD`, `Azure`, `AD, Azure` |
 | `OSInstallDate` | OS Install Date | Text Box | `DATE` | `2025-09-09` |
 | `Users` | Users | **Text Area** | `ANY` | `jsmith, adoe` (history of logged-on users) |
 
-- For the **AD / Azure** radio field, enter these three values in *Field Values*, one per line, exactly like this:
+- **AD / Azure** works as a plain Text Box. If people also edit it by hand in Snipe-IT, you can use **Radio Buttons** instead, so they pick from the same values the script writes. Enter them in *Field Values*, one per line, exactly like this:
   ```
   AD
   Azure
