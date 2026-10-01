@@ -44,7 +44,7 @@ Virtual machines (Hyper-V, VMware, Parallels) and computers without a valid seri
 
 - Windows 10 / 11 (or Windows Server) with **Windows PowerShell 5.1**
 - **Snipe-IT** with API access, reachable over HTTPS from the computers
-- An **API token** of a Snipe-IT user with permissions to view / create / edit assets, view / create models, view users and check assets in / out
+- An **API token** of a dedicated Snipe-IT service user (see [Service user and API token](#service-user-and-api-token))
 - Snipe-IT users whose **username or e-mail matches the Windows UPN** (for example synced from Entra ID / LDAP), so the asset can be checked out to them
 
 ## Setup in Snipe-IT
@@ -52,7 +52,30 @@ Virtual machines (Hyper-V, VMware, Parallels) and computers without a valid seri
 1. **Create custom fields** for the data you want to store (*Settings → Custom Fields → New field*, format *ANY* is fine). Note the **DB Field** column of each one, for example `_snipeit_ram_6`.
 2. **Add them to a fieldset** (*Settings → Custom Fields → Fieldsets*) and note the fieldset ID. New models get this fieldset.
 3. Note the IDs of the **status label** for new assets (*Settings → Status Labels*) and of the **categories** for laptops and desktops (*Settings → Categories*).
-4. **Create an API token** (*your user menu → Manage API keys*). Use a dedicated service user with only the permissions listed above.
+4. **Create a service user and its API token**, see below.
+
+### Service user and API token
+
+Don't use your own or an admin account. Create a dedicated user that can do only what the script needs:
+
+1. **Create the user**: *People → Create New*
+   - First name: `PowerShell`, Last name: `Updater`
+   - Username: for example `powershell.updater`
+   - Set a strong password and keep **This user can login** enabled (needed to create the API token)
+2. **Set permissions**: open the user → *Edit* → *Permissions* tab, and grant only:
+
+   | Section | Permissions |
+   |---------|-------------|
+   | **Assets** | View, Create, Edit, Checkout, Checkin |
+   | **Asset Models** | View, Create |
+   | **Users** | View |
+   | **Self** | Create API Keys |
+
+   Leave everything else on *Deny*, and **don't** make the user a Super User or Admin.
+3. **Generate the API token**: log in to Snipe-IT **as `powershell.updater`** → user menu (top right) → *Manage API Keys* → *Create New Token*, name it for example `Intune asset sync`.
+4. **Copy the token right away**, Snipe-IT shows it only once. Paste it into `$SnipeItApiToken` in the script.
+
+With these permissions the token can't delete anything, change settings or manage users, even if someone reads it from the script.
 
 ## Configuration
 
@@ -105,7 +128,8 @@ The script then runs at every user logon.
 
 ## Security
 
-- The API token is stored in the script in plain text, and the script runs as a normal user. **Every user of the computer can read it** (Intune keeps a temporary copy, GPO runs it from NETLOGON). Use a **dedicated Snipe-IT API user with minimal permissions**, and never a token of an administrator account.
+- The API token is stored in the script in plain text, and the script runs as a normal user. **Every user of the computer can read it** (Intune keeps a temporary copy, GPO runs it from NETLOGON). Use the **dedicated service user with minimal permissions** described in [Service user and API token](#service-user-and-api-token), never a token of an administrator account.
+- If the token leaks, delete it in *Manage API Keys* of the service user and create a new one. Then update the script, nothing else needs to change.
 - Don't commit a script with a real token to a public repository.
 
 ## How it works
