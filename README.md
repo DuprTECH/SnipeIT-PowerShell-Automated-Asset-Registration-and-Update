@@ -5,6 +5,8 @@ PowerShell script that keeps your **[Snipe-IT](https://snipeitapp.com/)** asset 
 > 🪟 **Windows only.** The script uses WMI/CIM, the registry, `dsregcmd` and Windows Defender cmdlets. It does not run on macOS or Linux.
 >
 > 🍎🐧 **Need it for macOS or Linux?** The same automated registration and update can be built for other operating systems too (for example deployed through Intune for macOS, Jamf or a cron job). Get in touch: 📧 [info@duprtech.sk](mailto:info@duprtech.sk)
+>
+> ➕ **Need more data in Snipe-IT?** Anything that can be read from the computer can be added, for example **TeamViewer / AnyDesk ID**, BitLocker status and recovery key ID, monitors and docking stations, BIOS version, battery health, TPM / Secure Boot, installed software, printers or warranty info. Get in touch: 📧 [info@duprtech.sk](mailto:info@duprtech.sk)
 
 Deploy it with:
 - **Microsoft Intune → Remediations** (detection script only, no remediation script needed), or
